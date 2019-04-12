@@ -2,6 +2,8 @@
 package lesson2.task1
 
 import lesson1.task1.discriminant
+import lesson1.task1.sqr
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -105,7 +107,14 @@ fun timeForHalfWay(t1: Double, v1: Double,
  */
 fun whichRookThreatens(kingX: Int, kingY: Int,
                        rookX1: Int, rookY1: Int,
-                       rookX2: Int, rookY2: Int): Int = TODO()
+                       rookX2: Int, rookY2: Int): Int {
+    return when {
+        (kingX == rookX1 && kingY == rookY2) || (kingX == rookX2 && kingY == rookY1) -> 3
+        kingY == rookY2 || kingX == rookX2 -> 2
+        kingX == rookX1 || kingY == rookY1 -> 1
+        else -> 0
+    }
+}
 
 /**
  * Простая
@@ -119,7 +128,15 @@ fun whichRookThreatens(kingX: Int, kingY: Int,
  */
 fun rookOrBishopThreatens(kingX: Int, kingY: Int,
                           rookX: Int, rookY: Int,
-                          bishopX: Int, bishopY: Int): Int = TODO()
+                          bishopX: Int, bishopY: Int): Int {
+    val bishopCan = abs(kingX - bishopX) == abs(kingY - bishopY)
+    return when {
+        bishopCan && (kingX == rookX || kingY == rookY) -> 3
+        bishopCan -> 2
+        kingX == rookX || kingY == rookY -> 1
+        else -> 0
+    }
+}
 
 /**
  * Простая
@@ -129,7 +146,15 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
+fun triangleKind(a: Double, b: Double, c: Double): Int {
+    val triangle = listOf(a, b, c).sorted()
+    return when {
+        triangle[2] >= triangle[1] + triangle[0] -> -1
+        sqr(triangle[2]) > sqr(triangle[1]) + sqr(triangle[0]) -> 2
+        sqr(triangle[2]) == sqr(triangle[1]) + sqr(triangle[0]) -> 1
+        else -> 0
+    }
+}
 
 /**
  * Средняя
@@ -139,4 +164,12 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    return when {
+        a < c && b in c..d -> b - c
+        a < c && d in c..b -> d - c
+        c < a && b in a..d -> b - a
+        c < a && d in a..b -> d - a
+        else -> -1
+    }
+}
