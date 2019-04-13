@@ -67,7 +67,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun tailDigitNumber(n: Int, res: Int): Int = if (n < 10) res else tailDigitNumber(n / 10, res + 1)
-fun digitNumber(n: Int): Int = tailDigitNumber(n, 1)
+fun digitNumber(n: Int): Int = tailDigitNumber(abs(n), 1)
 
 /**
  * Простая
@@ -132,7 +132,8 @@ fun getDivs(x: Int): MutableList<Int> {
     for (i in 2..x / 2)
         if (x % i == 0)
             divX.add(i)
-    divX.add(x)
+    if (x != 1)
+        divX.add(x)
     return divX
 }
 
