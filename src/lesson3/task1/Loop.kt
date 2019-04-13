@@ -67,6 +67,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun tailDigitNumber(n: Int, res: Int): Int = if (n < 10) res else tailDigitNumber(n / 10, res + 1)
+
 fun digitNumber(n: Int): Int = tailDigitNumber(abs(n), 1)
 
 /**
@@ -76,6 +77,7 @@ fun digitNumber(n: Int): Int = tailDigitNumber(abs(n), 1)
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
 fun tailFib(n: Int, curr: Int, prev: Int): Int = if (n == 0) curr else tailFib(n - 1, curr + prev, curr)
+
 fun fib(n: Int): Int = tailFib(n, 0, 1)
 
 /**
@@ -182,7 +184,16 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
  * Написать функцию, которая находит, сколько шагов требуется для
  * этого для какого-либо начального X > 0.
  */
-fun collatzSteps(x: Int): Int = TODO()
+fun collatzSteps(x: Int): Int {
+    var counter = 0
+    var modifiedX = x
+
+    while (modifiedX != 1) {
+        counter++
+        modifiedX = if (modifiedX % 2 == 0) modifiedX / 2 else 3 * modifiedX + 1
+    }
+    return counter
+}
 
 /**
  * Средняя
@@ -191,7 +202,21 @@ fun collatzSteps(x: Int): Int = TODO()
  * sin(x) = x - x^3 / 3! + x^5 / 5! - x^7 / 7! + ...
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
-fun sin(x: Double, eps: Double): Double = TODO()
+fun normParam(s: Double): Int = if (s < 0) 1 else 2
+
+fun normalize(x: Double, s: Double): Double = when {
+    x >= s && x <= s + PI -> x
+    x > s + PI && x < s + 2 * PI -> normParam(s) * PI - x
+    x >= s + 2 * PI -> normalize(x - 2 * PI, s)
+    else -> normalize(x + 2 * PI, s)
+}
+
+fun elem(x: Double, n: Int, m: Int, negOne: Double = -1.0) = negOne.pow(n) * x.pow(m) / factorial(m)
+
+fun magicSin(x: Double, eps: Double, sum: Double, n: Int, elem: Double = elem(x, n, 2 * n + 1)): Double =
+        if (abs(elem) >= eps) magicSin(x, eps, sum + elem, n + 1) else sum
+
+fun sin(x: Double, eps: Double): Double = magicSin(normalize(x, -PI / 2), eps, 0.0, 0)
 
 /**
  * Средняя
@@ -200,7 +225,10 @@ fun sin(x: Double, eps: Double): Double = TODO()
  * cos(x) = 1 - x^2 / 2! + x^4 / 4! - x^6 / 6! + ...
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
-fun cos(x: Double, eps: Double): Double = TODO()
+fun magicCos(x: Double, eps: Double, sum: Double, n: Int, elem: Double = elem(x, n, 2 * n)): Double =
+        if (abs(elem) >= eps) magicCos(x, eps, sum + elem, n + 1) else sum
+
+fun cos(x: Double, eps: Double): Double = magicCos(normalize(x, 0.0), eps, 0.0, 0)
 
 /**
  * Средняя
@@ -209,7 +237,10 @@ fun cos(x: Double, eps: Double): Double = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun revert(n: Int): Int = TODO()
+fun magicRevert(n: Int, res: Int): Int =
+        if (n == 0) res else magicRevert(n / 10, 10 * res + n % 10)
+
+fun revert(n: Int): Int = (if (n > 0) 1 else -1) * magicRevert(abs(n), 0)
 
 /**
  * Средняя
@@ -220,7 +251,7 @@ fun revert(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean = TODO()
+fun isPalindrome(n: Int): Boolean = n == revert(n)
 
 /**
  * Средняя
@@ -230,7 +261,10 @@ fun isPalindrome(n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun hasDifferentDigits(n: Int): Boolean = TODO()
+fun find(n: Int, curr: Int): Boolean =
+        if (n == 0) false else if (n % 10 == curr) find(n / 10, curr) else true
+
+fun hasDifferentDigits(n: Int): Boolean = find(abs(n), n % 10)
 
 /**
  * Сложная
