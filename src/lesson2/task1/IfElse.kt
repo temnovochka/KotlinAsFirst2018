@@ -147,11 +147,11 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
  * Если такой треугольник не существует, вернуть -1.
  */
 fun triangleKind(a: Double, b: Double, c: Double): Int {
-    val triangle = listOf(a, b, c).sorted()
+    val (x1, x2, max) = listOf(a, b, c).sorted()
     return when {
-        triangle[2] >= triangle[1] + triangle[0] -> -1
-        sqr(triangle[2]) > sqr(triangle[1]) + sqr(triangle[0]) -> 2
-        sqr(triangle[2]) == sqr(triangle[1]) + sqr(triangle[0]) -> 1
+        max >= x1 + x2 -> -1
+        sqr(max) > sqr(x1) + sqr(x2) -> 2
+        sqr(max) == sqr(x1) + sqr(x2) -> 1
         else -> 0
     }
 }

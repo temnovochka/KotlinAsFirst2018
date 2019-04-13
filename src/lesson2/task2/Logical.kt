@@ -18,11 +18,13 @@ fun pointInsideCircle(x: Double, y: Double, x0: Double, y0: Double, r: Double) =
  * Четырехзначное число назовем счастливым, если сумма первых двух ее цифр равна сумме двух последних.
  * Определить, счастливое ли заданное число, вернуть true, если это так.
  */
+fun getPair(n: Int): Pair<Int, Int> = Pair(n % 10, n / 10)
+
 fun isNumberHappy(number: Int): Boolean {
-    val one = number % 10
-    val two = number / 10 - number / 100 * 10
-    val three = number / 100 - number / 1000 * 10
-    val four = number / 1000
+    val (one, next1) = getPair(number)
+    val (two, next2) = getPair(next1)
+    val (three, next3) = getPair(next2)
+    val (four, _) = getPair(next3)
     return one + two == three + four
 }
 
@@ -45,8 +47,8 @@ fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean =
  */
 fun daysInMonth(month: Int, year: Int): Int {
     return when (month) {
-        in listOf(1, 3, 5, 7, 8, 10, 12) -> 31
-        in listOf(4, 6, 9, 11) -> 30
+        in setOf(1, 3, 5, 7, 8, 10, 12) -> 31
+        in setOf(4, 6, 9, 11) -> 30
         2 -> if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) 29 else 28
         else -> -1
     }
@@ -60,8 +62,8 @@ fun daysInMonth(month: Int, year: Int): Int {
  * Вернуть true, если утверждение верно
  */
 fun circleInside(x1: Double, y1: Double, r1: Double,
-                 x2: Double, y2: Double, r2: Double): Boolean = sqrt(sqr(x2 - x1) + sqr(y2 - y1)) <= r2 - r1
-
+                 x2: Double, y2: Double, r2: Double): Boolean =
+        sqr(x2 - x1) + sqr(y2 - y1) <= (if (r2 > r1) 1 else -1) * sqr(r2 - r1)
 /**
  * Средняя
  *
