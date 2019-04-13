@@ -1,7 +1,7 @@
 @file:Suppress("UNUSED_PARAMETER")
 package lesson3.task1
 
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /**
  * Пример
@@ -66,7 +66,8 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = if (n < 10) 1 else digitNumber(n / 10) + 1
+fun tailDigitNumber(n: Int, res: Int): Int = if (n < 10) res else tailDigitNumber(n / 10, res + 1)
+fun digitNumber(n: Int): Int = tailDigitNumber(n, 1)
 
 /**
  * Простая
@@ -74,7 +75,8 @@ fun digitNumber(n: Int): Int = if (n < 10) 1 else digitNumber(n / 10) + 1
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int = if (n <= 2) 1 else fib(n - 1) + fib(n - 2)
+fun tailFib(n: Int, curr: Int, prev: Int): Int = if (n == 0) curr else tailFib(n - 1, curr + prev, curr)
+fun fib(n: Int): Int = tailFib(n, 0, 1)
 
 /**
  * Простая
@@ -82,21 +84,41 @@ fun fib(n: Int): Int = if (n <= 2) 1 else fib(n - 1) + fib(n - 2)
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int = TODO()
+fun lcm(m: Int, n: Int): Int {
+    var a = m
+    var b = n
+    while (a != 0 && b != 0) {
+        if (a > b)
+            a %= b
+        else
+            b %= a
+    }
+    return m * n / (a + b)
+}
 
 /**
  * Простая
  *
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
-fun minDivisor(n: Int): Int = TODO()
+fun minDivisor(n: Int): Int {
+    for (i in 2..n / 2)
+        if (n % i == 0)
+            return i
+    return n
+}
 
 /**
  * Простая
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int = TODO()
+fun maxDivisor(n: Int): Int {
+    for (i in n / 2 downTo 2)
+        if (n % i == 0)
+            return i
+    return 1
+}
 
 /**
  * Простая
@@ -105,7 +127,24 @@ fun maxDivisor(n: Int): Int = TODO()
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = TODO()
+fun getDivs(x: Int): MutableList<Int> {
+    val divX = mutableListOf<Int>()
+    for (i in 2..x / 2)
+        if (x % i == 0)
+            divX.add(i)
+    divX.add(x)
+    return divX
+}
+
+fun isCoPrime(m: Int, n: Int): Boolean {
+    val variables = listOf(m, n).sorted()
+    val divs = getDivs(variables[0])
+
+    for (i in divs)
+        if (variables[1] % i == 0)
+            return false
+    return true
+}
 
 /**
  * Простая
@@ -114,7 +153,17 @@ fun isCoPrime(m: Int, n: Int): Boolean = TODO()
  * то есть, существует ли такое целое k, что m <= k*k <= n.
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
-fun squareBetweenExists(m: Int, n: Int): Boolean = TODO()
+fun squareBetweenExists(m: Int, n: Int): Boolean {
+    val floorM = floor(sqrt(m.toDouble()))
+    val ceilM = ceil(sqrt(m.toDouble()))
+    val floorN = floor(sqrt(n.toDouble()))
+    val ceilN = ceil(sqrt(n.toDouble()))
+
+    return when {
+        floorM == ceilM || floorN == ceilN -> true
+        else -> abs(floorM - ceilN) > 1
+    }
+}
 
 /**
  * Средняя
