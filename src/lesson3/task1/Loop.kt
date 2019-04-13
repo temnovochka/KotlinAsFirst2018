@@ -1,6 +1,7 @@
 @file:Suppress("UNUSED_PARAMETER")
 package lesson3.task1
 
+import lesson1.task1.sqr
 import kotlin.math.*
 
 /**
@@ -38,7 +39,7 @@ fun isPrime(n: Int): Boolean {
  */
 fun isPerfect(n: Int): Boolean {
     var sum = 1
-    for (m in 2..n/2) {
+    for (m in 2..n / 2) {
         if (n % m > 0) continue
         sum += m
         if (sum > n) break
@@ -275,7 +276,32 @@ fun hasDifferentDigits(n: Int): Boolean = find(abs(n), n % 10)
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun getListOfDigits(n: Int): List<Int> {
+    val res = mutableListOf<Int>()
+    var num = n
+    while (num > 0) {
+        res.add(num % 10)
+        num /= 10
+    }
+    return res.asReversed()
+}
+
+fun getDigit(n: Int, flag: Int): Int {
+    var counter = n
+    var currNum = 1
+    var currNumPrepared = if (flag == 0) sqr(currNum) else fib(currNum)
+    var currListOfDigits = listOf(currNumPrepared)
+
+    while (currListOfDigits.size < counter) {
+        counter -= currListOfDigits.size
+        currNum += 1
+        currNumPrepared = if (flag == 0) sqr(currNum) else fib(currNum)
+        currListOfDigits = getListOfDigits(currNumPrepared)
+    }
+    return currListOfDigits[counter - 1]
+}
+
+fun squareSequenceDigit(n: Int): Int = getDigit(n, 0)
 
 /**
  * Сложная
@@ -286,4 +312,4 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int = getDigit(n, 1)
