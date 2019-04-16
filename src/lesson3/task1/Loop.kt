@@ -67,7 +67,7 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun tailDigitNumber(n: Int, res: Int): Int = if (n < 10) res else tailDigitNumber(n / 10, res + 1)
+tailrec fun tailDigitNumber(n: Int, res: Int): Int = if (n < 10) res else tailDigitNumber(n / 10, res + 1)
 
 fun digitNumber(n: Int): Int = tailDigitNumber(abs(n), 1)
 
@@ -77,7 +77,7 @@ fun digitNumber(n: Int): Int = tailDigitNumber(abs(n), 1)
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun tailFib(n: Int, curr: Int, prev: Int): Int = if (n == 0) curr else tailFib(n - 1, curr + prev, curr)
+tailrec fun tailFib(n: Int, curr: Int, prev: Int): Int = if (n == 0) curr else tailFib(n - 1, curr + prev, curr)
 
 fun fib(n: Int): Int = tailFib(n, 0, 1)
 
@@ -141,11 +141,11 @@ fun getDivs(x: Int): MutableList<Int> {
 }
 
 fun isCoPrime(m: Int, n: Int): Boolean {
-    val variables = listOf(m, n).sorted()
-    val divs = getDivs(variables[0])
+    val (x, y) = listOf(m, n).sorted()
+    val divs = getDivs(x)
 
     for (i in divs)
-        if (variables[1] % i == 0)
+        if (y % i == 0)
             return false
     return true
 }
@@ -286,22 +286,22 @@ fun getListOfDigits(n: Int): List<Int> {
     return res.asReversed()
 }
 
-fun getDigit(n: Int, flag: Int): Int {
+fun getDigit(n: Int, f: (Int) -> Int): Int {
     var counter = n
     var currNum = 1
-    var currNumPrepared = if (flag == 0) sqr(currNum) else fib(currNum)
+    var currNumPrepared = f(currNum)
     var currListOfDigits = listOf(currNumPrepared)
 
     while (currListOfDigits.size < counter) {
         counter -= currListOfDigits.size
         currNum += 1
-        currNumPrepared = if (flag == 0) sqr(currNum) else fib(currNum)
+        currNumPrepared = f(currNum)
         currListOfDigits = getListOfDigits(currNumPrepared)
     }
     return currListOfDigits[counter - 1]
 }
 
-fun squareSequenceDigit(n: Int): Int = getDigit(n, 0)
+fun squareSequenceDigit(n: Int): Int = getDigit(n, ::sqr)
 
 /**
  * Сложная
@@ -312,4 +312,4 @@ fun squareSequenceDigit(n: Int): Int = getDigit(n, 0)
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = getDigit(n, 1)
+fun fibSequenceDigit(n: Int): Int = getDigit(n, ::fib)
