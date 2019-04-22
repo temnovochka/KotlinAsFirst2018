@@ -3,7 +3,7 @@
 package lesson4.task1
 
 import lesson1.task1.discriminant
-import lesson3.task1.isPrime
+import java.lang.Math.pow
 import kotlin.math.*
 
 /**
@@ -210,7 +210,13 @@ fun factorize(n: Int): List<Int> {
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  * Множители в результирующей строке должны располагаться по возрастанию.
  */
-fun factorizeToString(n: Int): String = TODO()
+fun factorizeToString(n: Int): String {
+    val nFact = factorize(n)
+    var res = ""
+    for (elem in nFact)
+        res += if (res == "") "$elem" else "*$elem"
+    return res
+}
 
 /**
  * Средняя
@@ -219,7 +225,16 @@ fun factorizeToString(n: Int): String = TODO()
  * Результат перевода вернуть в виде списка цифр в base-ичной системе от старшей к младшей,
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
-fun convert(n: Int, base: Int): List<Int> = TODO()
+fun convert(n: Int, base: Int): List<Int> {
+    val res = mutableListOf<Int>()
+    var d = n
+    while (d > base) {
+        res.add(d % base)
+        d /= base
+    }
+    res.add(d)
+    return res.reversed()
+}
 
 /**
  * Сложная
@@ -229,7 +244,16 @@ fun convert(n: Int, base: Int): List<Int> = TODO()
  * строчными буквами: 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: n = 100, base = 4 -> 1210, n = 250, base = 14 -> 13c
  */
-fun convertToString(n: Int, base: Int): String = TODO()
+fun convertToString(n: Int, base: Int): String {
+    val nConv = convert(n, base)
+    var res = ""
+    val alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+    for (elem in nConv) {
+        res += if (elem <= 9) "$elem" else "${alphabet[elem - 10]}"
+    }
+    return res
+}
 
 /**
  * Средняя
@@ -238,7 +262,14 @@ fun convertToString(n: Int, base: Int): String = TODO()
  * из системы счисления с основанием base в десятичную.
  * Например: digits = (1, 3, 12), base = 14 -> 250
  */
-fun decimal(digits: List<Int>, base: Int): Int = TODO()
+fun decimal(digits: List<Int>, base: Int): Int {
+    val diReverse = digits.reversed()
+    var res = 0
+    for ((i, elem) in diReverse.withIndex()) {
+        res += pow(base.toDouble(), i.toDouble()).toInt() * elem
+    }
+    return res
+}
 
 /**
  * Сложная
@@ -249,7 +280,14 @@ fun decimal(digits: List<Int>, base: Int): Int = TODO()
  * 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: str = "13c", base = 14 -> 250
  */
-fun decimalFromString(str: String, base: Int): Int = TODO()
+fun decimalFromString(str: String, base: Int): Int {
+    val digits = mutableListOf<Int>()
+    val alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+    for (elem in str)
+        digits.add(if (elem !in alphabet) elem.toInt() - '0'.toInt() else alphabet.indexOf(elem) + 10)
+    return decimal(digits, base)
+}
 
 /**
  * Сложная
