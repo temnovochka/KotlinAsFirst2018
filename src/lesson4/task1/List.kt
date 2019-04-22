@@ -190,17 +190,16 @@ fun accumulate(list: MutableList<Double>): MutableList<Double> {
 fun factorize(n: Int): List<Int> {
     var mutN = n
     val res = mutableListOf<Int>()
-    while (mutN != 1) {
-        for (i in 2..mutN) {
-            if (!isPrime(i))
-                continue
-            if (mutN % i == 0) {
-                mutN /= i
-                res.add(i)
-                break
-            }
+    for (i in 2..mutN / 2) {
+        while (mutN % i == 0) {
+            mutN /= i
+            res.add(i)
         }
+        if (mutN == 1)
+            break
     }
+    if (mutN != 1)
+        res.add(n)
     return res.sorted()
 }
 
