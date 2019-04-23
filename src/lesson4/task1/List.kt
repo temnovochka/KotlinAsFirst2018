@@ -5,6 +5,7 @@ package lesson4.task1
 import lesson1.task1.discriminant
 import java.lang.Math.pow
 import kotlin.math.*
+import kotlin.text.StringBuilder
 
 /**
  * Пример
@@ -210,13 +211,7 @@ fun factorize(n: Int): List<Int> {
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  * Множители в результирующей строке должны располагаться по возрастанию.
  */
-fun factorizeToString(n: Int): String {
-    val nFact = factorize(n)
-    var res = ""
-    for (elem in nFact)
-        res += if (res == "") "$elem" else "*$elem"
-    return res
-}
+fun factorizeToString(n: Int): String = factorize(n).joinToString("*")
 
 /**
  * Средняя
@@ -246,13 +241,12 @@ fun convert(n: Int, base: Int): List<Int> {
  */
 fun convertToString(n: Int, base: Int): String {
     val nConv = convert(n, base)
-    var res = ""
+    val res = StringBuilder()
     val alphabet = "abcdefghijklmnopqrstuvwxyz"
 
-    for (elem in nConv) {
-        res += if (elem <= 9) "$elem" else "${alphabet[elem - 10]}"
-    }
-    return res
+    for (elem in nConv)
+        res.append(if (elem <= 9) "$elem" else "${alphabet[elem - 10]}")
+    return res.toString()
 }
 
 /**
@@ -285,7 +279,7 @@ fun decimalFromString(str: String, base: Int): Int {
     val alphabet = "abcdefghijklmnopqrstuvwxyz"
 
     for (elem in str)
-        digits.add(if (elem !in alphabet) elem.toInt() - '0'.toInt() else alphabet.indexOf(elem) + 10)
+        digits.add(if (elem !in alphabet) elem - '0' else alphabet.indexOf(elem) + 10)
     return decimal(digits, base)
 }
 
@@ -311,7 +305,7 @@ fun roman(n: Int): String {
     var mutN = n
     var d: Int
     var i = 1000
-    var res = ""
+    val res = StringBuilder()
 
     if (n > 3999)
         return ""
@@ -319,18 +313,18 @@ fun roman(n: Int): String {
     while (mutN != 0) {
         d = mutN / i
         mutN -= d * i
-        res += when {
+        res.append(when {
             d == 0 -> ""
             d < 4 -> num[1 * i]?.repeat(d)
             d == 4 -> num[1 * i] + num[5 * i]
             d < 9 -> num[5 * i] + num[1 * i]?.repeat(d - 5)
             d == 9 -> num[1 * i] + num[10 * i]
             else -> ""
-        }
+        })
         i /= 10
     }
 
-    return res
+    return res.toString()
 }
 
 /**
@@ -431,6 +425,7 @@ fun russian(n: Int): String {
     )
 
     val numMiddle = mapOf(
+            10 to "десять",
             11 to "одиннадцать",
             12 to "двенадцать",
             13 to "тринадцать",
