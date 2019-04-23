@@ -340,4 +340,109 @@ fun roman(n: Int): String {
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+fun beforeHundred(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String>): String {
+    if (n == 0)
+        return ""
+    if (n < 10)
+        return numSmall[n].toString()
+    if (n < 20)
+        return numMiddle[n].toString()
+
+    val div = n / 10
+    val mod = n % 10
+    return when {
+        div == 4 -> "сорок " + numSmall[mod]
+        div < 4 -> numSmall[div] + "дцать " + numSmall[mod]
+        div < 9 -> numSmall[div] + "десят " + numSmall[mod]
+        else -> "девяносто " + numSmall[mod]
+    }
+}
+
+fun beforeThousand(n: Int, numSmall: Map<Int, String>): String {
+    return when {
+        n == 0 -> ""
+        n == 1 -> "сто "
+        n == 2 -> "двести "
+        n < 5 -> numSmall[n] + "ста "
+        else -> numSmall[n] + "сот "
+    }
+}
+
+fun smallThousands(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String>): String {
+    if (n == 0)
+        return "тысяч "
+    if (n < 10)
+        return when {
+            n == 1 -> "одна тысяча "
+            n == 2 -> "две тысячи "
+            n < 5 -> numSmall[n] + " тысячи "
+            else -> numSmall[n] + " тысяч "
+        }
+    return numMiddle[n] + " тысяч "
+}
+
+fun middleThousands(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String>): String {
+    if (n < 20)
+        return smallThousands(n, numSmall, numMiddle)
+
+    val div = n / 10
+    val mod = n % 10
+    val smallPart = smallThousands(mod, numSmall, numMiddle)
+    return when {
+        div == 4 -> "сорок $smallPart"
+        div < 4 -> numSmall[div] + "дцать " + smallPart
+        div < 9 -> numSmall[div] + "десят " + smallPart
+        else -> "девяносто $smallPart"
+    }
+}
+
+fun thousands(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String>): String {
+    if (n == 0)
+        return ""
+
+    if (n < 100)
+        return middleThousands(n, numSmall, numMiddle)
+
+    val div = n / 100
+    val mod = n % 100
+    val smallPart = middleThousands(mod, numSmall, numMiddle)
+
+    return when {
+        div == 0 -> smallPart
+        div == 1 -> "сто $smallPart"
+        div == 2 -> "двести $smallPart"
+        div < 5 -> numSmall[div] + "ста " + smallPart
+        else -> numSmall[div] + "сот " + smallPart
+    }
+}
+
+fun russian(n: Int): String {
+    val numSmall = mapOf(
+            1 to "один",
+            2 to "два",
+            3 to "три",
+            4 to "четыре",
+            5 to "пять",
+            6 to "шесть",
+            7 to "семь",
+            8 to "восемь",
+            9 to "девять"
+    )
+
+    val numMiddle = mapOf(
+            11 to "одиннадцать",
+            12 to "двенадцать",
+            13 to "тринадцать",
+            14 to "четырнадцать",
+            15 to "пятнадцать",
+            16 to "шестнадцать",
+            17 to "семнадцать",
+            18 to "восемнадцать",
+            19 to "девятнадцать"
+    )
+
+    val res = thousands(n / 1000, numSmall, numMiddle) +
+            beforeThousand(n / 100 - n / 1000 * 10, numSmall) +
+            beforeHundred(n % 100, numSmall, numMiddle)
+    return res.trim()
+}
