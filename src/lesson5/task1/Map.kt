@@ -98,7 +98,10 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
     val numbers = mapA.toMutableMap()
 
     for ((key, value) in mapB)
-        numbers[key] = if (numbers[key] == null || numbers[key] == value) value else numbers[key] + ", " + value
+        numbers[key] = when (numbers[key]) {
+            value, null -> value
+            else -> numbers[key] + ", " + value
+        }
 
     return numbers
 }
@@ -149,7 +152,18 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> = TODO()
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
+    val productMap = mutableMapOf<String, List<Double>>()
+    val result = mutableMapOf<String, Double>()
+
+    for ((name, price) in stockPrices)
+        productMap[name] = productMap.getOrDefault(name, listOf()) + listOf(price)
+
+    for ((name, priceList) in productMap)
+        result[name] = priceList.average()
+
+    return result
+}
 
 /**
  * Средняя
@@ -166,7 +180,23 @@ fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Doub
  *     "печенье"
  *   ) -> "Мария"
  */
-fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? = TODO()
+fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): String? {
+    var minPrice = Double.MAX_VALUE
+    var foundName = ""
+
+    for ((name, typePrice) in stuff) {
+        val (type, price) = typePrice
+        if (type == kind && price <= minPrice) {
+            minPrice = price
+            foundName = name
+        }
+    }
+
+    return when (foundName) {
+        "" -> null
+        else -> foundName
+    }
+}
 
 /**
  * Сложная
@@ -210,8 +240,7 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  */
 fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
     for ((k, v) in b)
-        if (a[k] != null && a[k] == v)
-            a.remove(k, v)
+        a.remove(k, v)
 }
 
 /**
@@ -230,7 +259,8 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.toSet().int
  * Например:
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
-fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
+fun canBuildFrom(chars: List<Char>, word: String): Boolean =
+        (word.toCharArray().map { it.toLowerCase() }.toSet() - chars.toSet()).isEmpty()
 
 /**
  * Средняя
