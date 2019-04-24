@@ -338,13 +338,13 @@ fun beforeHundred(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String
     if (n == 0)
         return ""
     if (n < 10)
-        return numSmall[n].toString()
+        return numSmall[n] ?: ""
     if (n < 20)
-        return numMiddle[n].toString()
+        return numMiddle[n] ?: ""
 
     val div = n / 10
     val mod = n % 10
-    val small = if (numSmall[mod].isNullOrBlank()) "" else numSmall[mod]
+    val small = numSmall[mod] ?: ""
     return when {
         div == 4 -> "сорок $small"
         div < 4 -> numSmall[div] + "дцать " + small
