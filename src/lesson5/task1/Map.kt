@@ -137,7 +137,7 @@ fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
  */
 fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
     for ((k, v) in a)
-        if (b[k] == null || b[k] != v)
+        if (b[k] != v)
             return false
     return true
 }
@@ -154,15 +154,11 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
  */
 fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
     val productMap = mutableMapOf<String, List<Double>>()
-    val result = mutableMapOf<String, Double>()
 
     for ((name, price) in stockPrices)
         productMap[name] = productMap.getOrDefault(name, listOf()) + listOf(price)
 
-    for ((name, priceList) in productMap)
-        result[name] = priceList.average()
-
-    return result
+    return productMap.mapValues { (_, v) -> v.average() }
 }
 
 /**
@@ -262,7 +258,7 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = a.toSet().int
  *   canBuildFrom(listOf('a', 'b', 'o'), "baobab") -> true
  */
 fun canBuildFrom(chars: List<Char>, word: String): Boolean =
-        (word.toCharArray().map { it.toLowerCase() }.toSet() - chars.map { it.toLowerCase() }.toSet()).isEmpty()
+        (word.map { it.toLowerCase() }.toSet() - chars.map { it.toLowerCase() }).isEmpty()
 
 /**
  * Средняя
