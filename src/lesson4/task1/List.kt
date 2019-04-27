@@ -242,10 +242,10 @@ fun convert(n: Int, base: Int): List<Int> {
 fun convertToString(n: Int, base: Int): String {
     val nConv = convert(n, base)
     val res = StringBuilder()
-    val alphabet = "abcdefghijklmnopqrstuvwxyz"
+    val alphabet = ('0'..'9') + ('a'..'z')
 
     for (elem in nConv)
-        res.append(if (elem <= 9) "$elem" else "${alphabet[elem - 10]}")
+        res.append("${alphabet[elem]}")
     return res.toString()
 }
 
@@ -324,7 +324,7 @@ fun roman(n: Int): String {
         i /= 10
     }
 
-    return res.toString()
+    return "$res"
 }
 
 /**
@@ -334,7 +334,33 @@ fun roman(n: Int): String {
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun beforeHundred(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String>): String {
+
+private val numSmall = mapOf(
+        1 to "один",
+        2 to "два",
+        3 to "три",
+        4 to "четыре",
+        5 to "пять",
+        6 to "шесть",
+        7 to "семь",
+        8 to "восемь",
+        9 to "девять"
+)
+
+private val numMiddle = mapOf(
+        10 to "десять",
+        11 to "одиннадцать",
+        12 to "двенадцать",
+        13 to "тринадцать",
+        14 to "четырнадцать",
+        15 to "пятнадцать",
+        16 to "шестнадцать",
+        17 to "семнадцать",
+        18 to "восемнадцать",
+        19 to "девятнадцать"
+)
+
+fun beforeHundred(n: Int): String {
     if (n == 0)
         return ""
     if (n < 10)
@@ -353,7 +379,7 @@ fun beforeHundred(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String
     }
 }
 
-fun beforeThousand(n: Int, numSmall: Map<Int, String>): String {
+fun beforeThousand(n: Int): String {
     return when {
         n == 0 -> ""
         n == 1 -> "сто "
@@ -363,7 +389,7 @@ fun beforeThousand(n: Int, numSmall: Map<Int, String>): String {
     }
 }
 
-fun smallThousands(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String>): String {
+fun smallThousands(n: Int): String {
     if (n == 0)
         return "тысяч "
     if (n < 10)
@@ -376,13 +402,13 @@ fun smallThousands(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, Strin
     return numMiddle[n] + " тысяч "
 }
 
-fun middleThousands(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String>): String {
+fun middleThousands(n: Int): String {
     if (n < 20)
-        return smallThousands(n, numSmall, numMiddle)
+        return smallThousands(n)
 
     val div = n / 10
     val mod = n % 10
-    val smallPart = smallThousands(mod, numSmall, numMiddle)
+    val smallPart = smallThousands(mod)
     return when {
         div == 4 -> "сорок $smallPart"
         div < 4 -> numSmall[div] + "дцать " + smallPart
@@ -391,16 +417,16 @@ fun middleThousands(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, Stri
     }
 }
 
-fun thousands(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String>): String {
+fun thousands(n: Int): String {
     if (n == 0)
         return ""
 
     if (n < 100)
-        return middleThousands(n, numSmall, numMiddle)
+        return middleThousands(n)
 
     val div = n / 100
     val mod = n % 100
-    val smallPart = middleThousands(mod, numSmall, numMiddle)
+    val smallPart = middleThousands(mod)
 
     return when {
         div == 0 -> smallPart
@@ -412,33 +438,8 @@ fun thousands(n: Int, numSmall: Map<Int, String>, numMiddle: Map<Int, String>): 
 }
 
 fun russian(n: Int): String {
-    val numSmall = mapOf(
-            1 to "один",
-            2 to "два",
-            3 to "три",
-            4 to "четыре",
-            5 to "пять",
-            6 to "шесть",
-            7 to "семь",
-            8 to "восемь",
-            9 to "девять"
-    )
-
-    val numMiddle = mapOf(
-            10 to "десять",
-            11 to "одиннадцать",
-            12 to "двенадцать",
-            13 to "тринадцать",
-            14 to "четырнадцать",
-            15 to "пятнадцать",
-            16 to "шестнадцать",
-            17 to "семнадцать",
-            18 to "восемнадцать",
-            19 to "девятнадцать"
-    )
-
-    val res = thousands(n / 1000, numSmall, numMiddle) +
-            beforeThousand(n / 100 - n / 1000 * 10, numSmall) +
-            beforeHundred(n % 100, numSmall, numMiddle)
+    val res = thousands(n / 1000) +
+            beforeThousand(n / 100 - n / 1000 * 10) +
+            beforeHundred(n % 100)
     return res.trim()
 }
