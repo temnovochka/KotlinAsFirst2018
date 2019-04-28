@@ -116,14 +116,8 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   buildGrades(mapOf("Марат" to 3, "Семён" to 5, "Михаил" to 5))
  *     -> mapOf(5 to listOf("Семён", "Михаил"), 3 to listOf("Марат"))
  */
-fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> {
-    val result = mutableMapOf<Int, List<String>>()
-
-    for ((key, value) in grades)
-        result[value] = ((result[value] ?: listOf()) + listOf(key)).sortedDescending()
-
-    return result
-}
+fun buildGrades(grades: Map<String, Int>): Map<Int, List<String>> =
+        grades.entries.groupBy({ (_, v) -> v }, { (k, _) -> k }).mapValues { (_, v) -> v.sortedDescending() }
 
 /**
  * Простая
@@ -152,14 +146,8 @@ fun containsIn(a: Map<String, String>, b: Map<String, String>): Boolean {
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> {
-    val productMap = mutableMapOf<String, List<Double>>()
-
-    for ((name, price) in stockPrices)
-        productMap[name] = productMap.getOrDefault(name, listOf()) + listOf(price)
-
-    return productMap.mapValues { (_, v) -> v.average() }
-}
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =
+        stockPrices.groupBy({ (k, _) -> k }, { (_, v) -> v }).mapValues { (_, v) -> v.average() }
 
 /**
  * Средняя
@@ -220,7 +208,20 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *          "Mikhail" to setOf("Sveta", "Marat")
  *        )
  */
-fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
+
+fun getFriends(person: String, currentFriends: Set<String>, friends: Map<String, Set<String>>): Set<String> {
+    val setOfMaybeFriends = currentFriends.flatMap { friends.getOrDefault(it, emptySet()) }
+
+    return when {
+        currentFriends.containsAll(setOfMaybeFriends) -> currentFriends
+        else -> getFriends(person, currentFriends + setOfMaybeFriends, friends)
+    }
+}
+
+fun propagateHandshakes(friends: Map<String, Set<String>>) =
+        (friends.keys + friends.values.flatten()).map { person ->
+            person to (friends[person]?.let { getFriends(person, it, friends) - person } ?: emptySet())
+        }.toMap()
 
 /**
  * Простая
@@ -272,14 +273,8 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean =
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> {
-    val res = mutableMapOf<String, Int>()
-
-    for (elem in list)
-        res[elem] = res.getOrDefault(elem, 0) + 1
-
-    return res.filter { (_, v) -> v > 1 }
-}
+fun extractRepeats(list: List<String>): Map<String, Int> =
+        list.groupBy { it }.mapValues { (_, v) -> v.size }.filterValues { it > 1 }
 
 /**
  * Средняя
@@ -290,11 +285,16 @@ fun extractRepeats(list: List<String>): Map<String, Int> {
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
+fun countLetters(word: String) = word.toList().groupBy { it }.mapValues { (_, v) -> v.size }
+
 fun hasAnagrams(words: List<String>): Boolean {
-    for ((i, w) in words.withIndex())
-        for (iter in (i + 1) until words.size)
-            if (canBuildFrom(w.toList(), words[iter]))
+    for ((i, currentWord) in words.withIndex()) {
+        val countedCurrentWord = countLetters(currentWord)
+        val sameLenWords = words.filterIndexed { index, _ -> index > i }.filter { it.length == currentWord.length }
+        for (word in sameLenWords)
+            if (countedCurrentWord == countLetters(word))
                 return true
+    }
     return false
 }
 
