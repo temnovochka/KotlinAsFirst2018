@@ -209,18 +209,20 @@ fun findCheapestStuff(stuff: Map<String, Pair<String, Double>>, kind: String): S
  *        )
  */
 
-fun getFriends(person: String, currentFriends: Set<String>, friends: Map<String, Set<String>>): Set<String> {
-    val setOfMaybeFriends = currentFriends.flatMap { friends.getOrDefault(it, emptySet()) }
+fun getFriends(person: String, currentFriends: MutableSet<String>, friends: Map<String, Set<String>>): Set<String> {
+    var setOfMaybeFriends = emptyList<String>()
 
-    return when {
-        currentFriends.containsAll(setOfMaybeFriends) -> currentFriends
-        else -> getFriends(person, currentFriends + setOfMaybeFriends, friends)
-    }
+    do {
+        currentFriends += setOfMaybeFriends
+        setOfMaybeFriends = currentFriends.flatMap { friends.getOrDefault(it, emptySet()) }
+    } while (!currentFriends.containsAll(setOfMaybeFriends))
+
+    return currentFriends
 }
 
 fun propagateHandshakes(friends: Map<String, Set<String>>) =
         (friends.keys + friends.values.flatten()).map { person ->
-            person to (friends[person]?.let { getFriends(person, it, friends) - person } ?: emptySet())
+            person to (friends[person]?.let { getFriends(person, it.toMutableSet(), friends) - person } ?: emptySet())
         }.toMap()
 
 /**
@@ -315,7 +317,30 @@ fun hasAnagrams(words: List<String>): Boolean {
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    val numbers = list.filter { it <= number / 2 }.toSet()
+    val allNumbers = list.toMutableSet()
+    val indexesOfNumbers =
+            list.withIndex().map { (i, num) -> num to i }.groupBy({ (k, _) -> k }, { (_, v) -> v }).toMap()
+
+    if (number / 2 == number - number / 2 ) {
+        var l = indexesOfNumbers.getValue(number / 2)
+        if (l.size > 1) {
+            l = l.sorted()
+            return Pair(l[0], l[1])
+        }
+    }
+
+    for (elem in numbers) {
+        allNumbers.remove(elem)
+        if (number - elem in allNumbers) {
+            val first = indexesOfNumbers.getValue(elem).first()
+            val second = indexesOfNumbers.getValue(number - elem).first()
+            return if (first < second) Pair(first, second) else Pair(second, first)
+        }
+    }
+    return Pair(-1, -1)
+}
 
 /**
  * Очень сложная
