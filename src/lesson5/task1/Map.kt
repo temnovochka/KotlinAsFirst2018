@@ -321,21 +321,21 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
     val numbers = list.filter { it <= number / 2 }.toSet()
     val allNumbers = list.toMutableSet()
     val indexesOfNumbers =
-            list.withIndex().map { (i, num) -> num to i }.groupBy({ (k, _) -> k }, { (_, v) -> v }).toMap()
+            list.withIndex().map { (i, num) -> num to i }.groupBy({ (k, _) -> k }, { (_, v) -> v })
 
-    if (number / 2 == number - number / 2 && number / 2 in allNumbers) {
-        var l = indexesOfNumbers.getOrDefault(number / 2, emptyList())
+    if (number % 2 == 0 && number / 2 in allNumbers) {
+        val l = indexesOfNumbers.getOrDefault(number / 2, emptyList())
         if (l.size > 1) {
-            l = l.sorted()
-            return Pair(l[0], l[1])
+            val (a, b) = l.sorted()
+            return Pair(a, b)
         }
     }
 
     for (elem in numbers) {
         allNumbers.remove(elem)
         if (number - elem in allNumbers) {
-            val first = indexesOfNumbers.getValue(elem).first()
-            val second = indexesOfNumbers.getValue(number - elem).first()
+            val first = indexesOfNumbers[elem]?.first() ?: -1
+            val second = indexesOfNumbers[number - elem]?.first() ?: -1
             return if (first < second) Pair(first, second) else Pair(second, first)
         }
     }
@@ -361,4 +361,25 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val tree = mutableMapOf<Set<String>, Pair<Int, Int>>()
+    val tmpTree = mutableMapOf<Set<String>, Pair<Int, Int>>()
+
+    for ((name, value) in treasures) {
+        val (w, p) = value
+        if (w <= capacity)
+            tmpTree += mapOf(setOf(name) to value)
+        for ((items, wp) in tree) {
+            val (weight, price) = wp
+            if (w + weight <= capacity)
+                tmpTree += mapOf(items + name to Pair(w + weight, price + p))
+        }
+        tree += tmpTree
+        tmpTree.clear()
+    }
+
+    return when {
+        tree.isEmpty() -> emptySet()
+        else -> tree.filter { (_, v) -> v.second == tree.values.maxBy { (_, p) -> p }?.second }.keys.first()
+    }
+}
