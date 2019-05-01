@@ -2,6 +2,9 @@
 
 package lesson6.task1
 
+import lesson2.task2.daysInMonth
+import java.lang.NumberFormatException
+
 /**
  * Пример
  *
@@ -71,7 +74,25 @@ fun main(args: Array<String>) {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val monthNames = setOf("января", "февраля", "марта", "апреля", "мая", "июня",
+            "июля", "августа", "сентября", "октября", "ноября", "декабря")
+    val line = str.split(" ")
+    try {
+        if (line.size != 3)
+            return ""
+        val (d, m, y) = line
+        if (m !in monthNames)
+            return ""
+        val monthNumber = monthNames.indexOf(m) + 1
+        val daysNumber = daysInMonth(monthNumber, y.toInt())
+        if (d.toInt() > daysNumber)
+            return ""
+        return String.format("%02d.%02d.%d", d.toInt(), monthNumber, y.toInt())
+    } catch (e: Exception) {
+        return ""
+    }
+}
 
 /**
  * Средняя
@@ -83,7 +104,25 @@ fun dateStrToDigit(str: String): String = TODO()
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30 февраля 2009) считается неверными
  * входными данными.
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val monthNames = setOf("января", "февраля", "марта", "апреля", "мая", "июня",
+            "июля", "августа", "сентября", "октября", "ноября", "декабря")
+    val line = digital.split(".")
+    try {
+        if (line.size != 3)
+            return ""
+        val (d, m, y) = line
+        if (m.toInt() > 12)
+            return ""
+        val monthName = monthNames.elementAt(m.toInt() - 1)
+        val daysNumber = daysInMonth(m.toInt(), y.toInt())
+        if (d.toInt() > daysNumber)
+            return ""
+        return String.format("%d %s %d", d.toInt(), monthName, y.toInt())
+    } catch (e: Exception) {
+        return ""
+    }
+}
 
 /**
  * Средняя
@@ -97,7 +136,15 @@ fun dateDigitToStr(digital: String): String = TODO()
  * Все символы в номере, кроме цифр, пробелов и +-(), считать недопустимыми.
  * При неверном формате вернуть пустую строку
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String {
+    val canBe = "0123456789+-() ".toSet()
+    val mustBe = "0123456789+".toSet()
+
+    return when {
+        phone.any { it !in canBe } -> ""
+        else -> phone.filter { it in mustBe }
+    }
+}
 
 /**
  * Средняя
@@ -109,7 +156,20 @@ fun flattenPhoneNumber(phone: String): String = TODO()
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int {
+    val canBe = "0123456789%- ".toSet()
+
+    return when {
+        jumps.any { it !in canBe } -> -1
+        else -> jumps.split(" ").filter { it !in setOf("%", "-") }.mapNotNull {
+            try {
+                it.toInt()
+            } catch (e: NumberFormatException) {
+                null
+            }
+        }.max() ?: -1
+    }
+}
 
 /**
  * Сложная

@@ -290,14 +290,8 @@ fun extractRepeats(list: List<String>): Map<String, Int> =
 fun countLetters(word: String) = word.toList().groupBy { it }.mapValues { (_, v) -> v.size }
 
 fun hasAnagrams(words: List<String>): Boolean {
-    for ((i, currentWord) in words.withIndex()) {
-        val countedCurrentWord = countLetters(currentWord)
-        val sameLenWords = words.filterIndexed { index, _ -> index > i }.filter { it.length == currentWord.length }
-        for (word in sameLenWords)
-            if (countedCurrentWord == countLetters(word))
-                return true
-    }
-    return false
+    val mapOfWords = words.map { countLetters(it) }
+    return mapOfWords.toSet().size != mapOfWords.size
 }
 
 /**
