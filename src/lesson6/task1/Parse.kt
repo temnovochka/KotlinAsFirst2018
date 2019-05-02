@@ -270,19 +270,17 @@ fun firstDuplicateIndex(str: String): Int {
     if (parsed == parsed.toSet())
         return -1
 
-    val existedWords = mutableSetOf<String>()
+    var prevWord = ""
     var len = 0
 
     for ((i, word) in parsed.withIndex()) {
-        if (word in existedWords) {
-            val index = existedWords.indexOf(word)
-            for (j in index until existedWords.size)
-                len -= existedWords.elementAt(j).length + 1
+        if (word == prevWord) {
+            len -= word.length + 1
             break
         }
         if (i == parsed.size - 1)
             return -1
-        existedWords.add(word)
+        prevWord = word
         len += word.length + 1
     }
 
