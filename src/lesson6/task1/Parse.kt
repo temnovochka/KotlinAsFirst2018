@@ -184,26 +184,22 @@ fun bestLongJump(jumps: String): Int {
  */
 fun bestHighJump(jumps: String): Int {
     val canBe = "0123456789+-% ".toSet()
-    if (jumps.any { it !in canBe })
+    if (jumps.any { it !in canBe } || jumps.isEmpty())
         return -1
 
     val parts = jumps.split(" ")
-    val highs = mutableListOf<Int>()
-    val attemptResults = mutableListOf<Char>()
+    val highs = mutableMapOf<Int, Char>()
 
+    var prev = 0
     for (part in parts) {
         try {
-            highs.add(part.toInt())
+            prev = part.toInt()
         } catch (e: NumberFormatException) {
-            attemptResults.add(part.last())
+            if (part.last() == '+')
+                highs[prev] = '+'
         }
     }
-
-    return try {
-        highs.elementAt(attemptResults.indexOfLast { it == '+' })
-    } catch (e: ArrayIndexOutOfBoundsException) {
-        -1
-    }
+    return highs.keys.max() ?: -1
 }
 
 /**
@@ -217,7 +213,7 @@ fun bestHighJump(jumps: String): Int {
  */
 fun plusMinus(expression: String): Int {
     val canBe = "0123456789+- ".toSet()
-    if (expression.any { it !in canBe })
+    if (expression.any { it !in canBe } || expression.isEmpty())
         throw IllegalArgumentException("")
 
     val parts = expression.split(" ")
