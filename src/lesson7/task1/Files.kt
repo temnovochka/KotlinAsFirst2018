@@ -54,7 +54,20 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    val res = mutableMapOf<String, Int>()
+    val fromFile = File(inputName).readLines().joinToString(separator = "").toLowerCase()
+
+    for (str in substrings) {
+        res[str] = res.getOrDefault(str, 0)
+        var fromIndex = fromFile.indexOf(str.toLowerCase(), 0)
+        while (fromIndex > -1) {
+            fromIndex = fromFile.indexOf(str.toLowerCase(), fromIndex + 1)
+            res[str] = res.getOrDefault(str, 0) + 1
+        }
+    }
+    return res
+}
 
 
 /**
@@ -71,7 +84,26 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val corrections = mapOf(
+            'я' to 'а',
+            'ы' to 'и',
+            'ю' to 'у'
+    )
+
+    val check = "жчшщ".toSet()
+    val checkNext = "яыю".toSet()
+
+    File(outputName).bufferedWriter().use {
+        var prevSymbol = ' '
+        for (symbol in File(inputName).readText()) {
+            var currentSymbol = symbol.toLowerCase()
+            if (prevSymbol in check && currentSymbol in checkNext)
+                currentSymbol = corrections.getOrDefault(currentSymbol, ' ')
+            currentSymbol = if (symbol.isUpperCase()) currentSymbol.toUpperCase() else currentSymbol
+            it.write(currentSymbol.toString())
+            prevSymbol = currentSymbol.toLowerCase()
+        }
+    }
 }
 
 /**
