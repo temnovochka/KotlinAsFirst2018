@@ -187,7 +187,7 @@ fun bestHighJump(jumps: String): Int {
     if (jumps.any { it !in canBe } || jumps.isEmpty())
         return -1
 
-    var highs = 0
+    var highs = -1
     var prev = 0
 
     for (part in jumps.split(" ")) {
