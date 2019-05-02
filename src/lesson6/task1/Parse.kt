@@ -76,7 +76,7 @@ fun main(args: Array<String>) {
  * входными данными.
  */
 fun dateStrToDigit(str: String): String {
-    val monthNames = setOf("января", "февраля", "марта", "апреля", "мая", "июня",
+    val monthNames = listOf("января", "февраля", "марта", "апреля", "мая", "июня",
             "июля", "августа", "сентября", "октября", "ноября", "декабря")
     val line = str.split(" ")
     try {
@@ -106,7 +106,7 @@ fun dateStrToDigit(str: String): String {
  * входными данными.
  */
 fun dateDigitToStr(digital: String): String {
-    val monthNames = setOf("января", "февраля", "марта", "апреля", "мая", "июня",
+    val monthNames = listOf("января", "февраля", "марта", "апреля", "мая", "июня",
             "июля", "августа", "сентября", "октября", "ноября", "декабря")
     val line = digital.split(".")
     try {
@@ -192,12 +192,10 @@ fun bestHighJump(jumps: String): Int {
 
     var prev = 0
     for (part in parts) {
-        try {
+        if (part.first().isDigit())
             prev = part.toInt()
-        } catch (e: NumberFormatException) {
-            if (part.last() == '+')
-                highs[prev] = '+'
-        }
+        else if (part.last() == '+')
+            highs[prev] = '+'
     }
     return highs.keys.max() ?: -1
 }
