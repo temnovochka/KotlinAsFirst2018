@@ -124,7 +124,13 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    TODO()
+    File(outputName).bufferedWriter().use {
+        val lines = File(inputName).readLines().map(String::trim)
+        val maxLen = lines.map { line -> line.length }.max() ?: 0
+
+        for (line in lines)
+            it.write(" ".repeat((maxLen - line.length) / 2) + line + '\n')
+    }
 }
 
 /**
@@ -176,7 +182,23 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun top20Words(inputName: String): Map<String, Int> {
+    val res = mutableMapOf<String, Int>()
+    val reg = Regex("[^a-zа-я ё]")
+
+    File(inputName).readLines()
+            .map { it.toLowerCase().replace(reg, " ") }
+            .flatMap { it.split(" ") }
+            .filter { it.isNotEmpty() }
+            .forEach {
+                res[it] = res.getOrDefault(it, 0) + 1
+            }
+
+    return when {
+        res.size <= 20 -> res
+        else -> res.toList().sortedByDescending { (_, v) -> v }.subList(0, 20).toMap()
+    }
+}
 
 /**
  * Средняя
@@ -214,7 +236,16 @@ fun top20Words(inputName: String): Map<String, Int> = TODO()
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: String) {
-    TODO()
+    File(outputName).bufferedWriter().use {
+        val map = dictionary.map { (k, v) -> k.toLowerCase() to v.toLowerCase() }.toMap()
+        File(inputName).readText()
+                .forEach { symbol ->
+                    var toReplace = map.getOrDefault(symbol.toLowerCase(), symbol.toString()).toLowerCase()
+                    if (symbol.isUpperCase())
+                        toReplace = toReplace.first().toUpperCase() + toReplace.substring(1)
+                    it.write(toReplace)
+                }
+    }
 }
 
 /**
