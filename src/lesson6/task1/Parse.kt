@@ -187,17 +187,16 @@ fun bestHighJump(jumps: String): Int {
     if (jumps.any { it !in canBe } || jumps.isEmpty())
         return -1
 
-    val parts = jumps.split(" ")
-    val highs = mutableMapOf<Int, Char>()
-
+    var highs = 0
     var prev = 0
-    for (part in parts) {
+
+    for (part in jumps.split(" ")) {
         if (part.first().isDigit())
             prev = part.toInt()
-        else if (part.last() == '+')
-            highs[prev] = '+'
+        else if (part.last() == '+' && prev > highs)
+            highs = prev
     }
-    return highs.keys.max() ?: -1
+    return highs
 }
 
 /**
