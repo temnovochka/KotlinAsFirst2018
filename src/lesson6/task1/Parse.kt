@@ -3,6 +3,7 @@
 package lesson6.task1
 
 import lesson2.task2.daysInMonth
+import java.lang.IllegalArgumentException
 import java.lang.NumberFormatException
 
 /**
@@ -181,7 +182,29 @@ fun bestLongJump(jumps: String): Int {
  * Прочитать строку и вернуть максимальную взятую высоту (230 в примере).
  * При нарушении формата входной строки вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    val canBe = "0123456789+-% ".toSet()
+    if (jumps.any { it !in canBe })
+        return -1
+
+    val parts = jumps.split(" ")
+    val highs = mutableListOf<Int>()
+    val attemptResults = mutableListOf<Char>()
+
+    for (part in parts) {
+        try {
+            highs.add(part.toInt())
+        } catch (e: NumberFormatException) {
+            attemptResults.add(part.last())
+        }
+    }
+
+    return try {
+        highs.elementAt(attemptResults.indexOfLast { it == '+' })
+    } catch (e: ArrayIndexOutOfBoundsException) {
+        -1
+    }
+}
 
 /**
  * Сложная
@@ -192,7 +215,45 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    val canBe = "0123456789+- ".toSet()
+    if (expression.any { it !in canBe })
+        throw IllegalArgumentException("")
+
+    val parts = expression.split(" ")
+    var res = 0
+    var isStart = true
+    var operation = '+'
+
+    var isPrevNum = false
+    var parsed: Int
+
+    for (part in parts) {
+        try {
+            if (!isPrevNum && !part.first().isDigit())
+                throw IllegalArgumentException("")
+            parsed = part.toInt()
+            if (isPrevNum)
+                throw IllegalArgumentException("")
+            else {
+                res = when {
+                    isStart -> parsed
+                    operation == '+' -> res + parsed
+                    else -> res - parsed
+                }
+                isStart = false
+                isPrevNum = true
+            }
+        } catch (e: NumberFormatException) {
+            if (isPrevNum && !isStart) {
+                operation = part.first()
+                isPrevNum = false
+            } else
+                throw IllegalArgumentException("")
+        }
+    }
+    return res
+}
 
 /**
  * Сложная
@@ -203,7 +264,30 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    val parsed = str.toLowerCase().split(" ")
+
+    if (parsed == parsed.toSet())
+        return -1
+
+    val existedWords = mutableSetOf<String>()
+    var len = 0
+
+    for ((i, word) in parsed.withIndex()) {
+        if (word in existedWords) {
+            val index = existedWords.indexOf(word)
+            for (j in index until existedWords.size)
+                len -= existedWords.elementAt(j).length + 1
+            break
+        }
+        if (i == parsed.size - 1)
+            return -1
+        existedWords.add(word)
+        len += word.length + 1
+    }
+
+    return len
+}
 
 /**
  * Сложная
