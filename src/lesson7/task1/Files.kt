@@ -56,7 +56,7 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  */
 fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
     val res = mutableMapOf<String, Int>()
-    val fromFile = File(inputName).readLines().joinToString(separator = "").toLowerCase()
+    val fromFile = File(inputName).readLines().joinToString(separator = " ").toLowerCase()
 
     for (str in substrings) {
         res[str] = res.getOrDefault(str, 0)
@@ -241,7 +241,7 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
         File(inputName).readText()
                 .forEach { symbol ->
                     var toReplace = map.getOrDefault(symbol.toLowerCase(), symbol.toString()).toLowerCase()
-                    if (symbol.isUpperCase())
+                    if (symbol.isUpperCase() && toReplace.isNotEmpty())
                         toReplace = toReplace.first().toUpperCase() + toReplace.substring(1)
                     it.write(toReplace)
                 }
@@ -275,7 +275,7 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use {
         var maxLen = 0
-        val words = mutableSetOf<String>()
+        val words = mutableListOf<String>()
         for (word in File(inputName).readLines()) {
             val currentWord = word.toLowerCase()
             if (currentWord == currentWord.toSet().joinToString(separator = "") && word.length >= maxLen) {
