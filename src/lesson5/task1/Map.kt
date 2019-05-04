@@ -1,6 +1,7 @@
 @file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
 
 package lesson5.task1
+import kotlin.math.max
 
 /**
  * Пример
@@ -355,7 +356,7 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+fun bagPackingDefault(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
     val tree = mutableMapOf<Set<String>, Pair<Int, Int>>()
     val tmpTree = mutableMapOf<Set<String>, Pair<Int, Int>>()
 
@@ -372,8 +373,45 @@ fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<Strin
         tmpTree.clear()
     }
 
-    return when {
-        tree.isEmpty() -> emptySet()
-        else -> tree.filter { (_, v) -> v.second == tree.values.maxBy { (_, p) -> p }?.second }.keys.first()
+    if (tree.isEmpty())
+        return emptySet()
+
+    val maxPrice = tree.values.maxBy { (_, p) -> p }?.second
+    return tree.filter { (_, v) -> v.second == maxPrice }.keys.first()
+}
+
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val a = Array(treasures.size + 1) { IntArray(capacity + 1) { 0 } }
+    val weights = mutableMapOf<Int, Int>()
+    val names = mutableSetOf<String>()
+    val allNames = mutableMapOf<Int, String>()
+
+    var counter = 0
+
+    for ((name, value) in treasures) {
+        counter += 1
+        val (weight, price) = value
+        weights[counter] = weight
+        allNames[counter] = name
+        for (s in 1..capacity) {
+            if (s >= weight)
+                a[counter][s] = max(a[counter - 1][s], a[counter - 1][s - weight] + price)
+            else
+                a[counter][s] = a[counter - 1][s]
+        }
     }
+
+    fun helper(k: Int, s: Int) {
+        if (a[k][s] == 0)
+            return
+        if (a[k - 1][s] == a[k][s])
+            helper(k - 1, s)
+        else {
+            helper(k - 1, s - weights[k]!!)
+            names.add(allNames[k]!!)
+        }
+    }
+
+    helper(treasures.size, capacity)
+    return names
 }
