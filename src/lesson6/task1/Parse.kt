@@ -370,4 +370,69 @@ fun fromRoman(roman: String): Int = TODO()
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    val result = mutableListOf<Int>()
+    for (i in 0 until cells)
+        result.add(0)
+
+    val canBe = "><+-[] ".toSet()
+    var position = cells / 2
+    val illegal = commands.any { it !in canBe }
+
+    if (commands.count { it == ']' } != commands.count { it == '[' } || illegal)
+        throw IllegalArgumentException("")
+
+    var i = 0
+
+    val opened = mutableListOf<Int>()
+    val mapOfOpenedBrackets = mutableMapOf<Int, Int>()
+    for ((j, command) in commands.withIndex()) {
+        if (command == '[') {
+            mapOfOpenedBrackets[j] = -1
+            opened.add(j)
+        } else if (command == ']') {
+            if (opened.isNotEmpty()) {
+                val lastOpened = opened.last()
+                mapOfOpenedBrackets[lastOpened] = j
+                opened.remove(lastOpened)
+            } else
+                throw IllegalArgumentException("")
+        }
+    }
+
+    val mapOfClosedBrackets = mutableMapOf<Int, Int>()
+    for ((open, close) in mapOfOpenedBrackets)
+        mapOfClosedBrackets[close] = open
+
+    var counter = 0
+
+    while (counter < limit) {
+        counter += 1
+        val command = commands.getOrNull(i) ?: break
+
+        if (position < 0 || position >= cells)
+            throw IllegalStateException("")
+
+        if (command == '+')
+            result[position] += 1
+        else if (command == '-')
+            result[position] -= 1
+        else if (command == '>')
+            position += 1
+        else if (command == '<')
+            position -= 1
+        else if (command == '[' && result[position] == 0) {
+            // берем команду после нужной ]
+            i = mapOfOpenedBrackets[i]!!
+            counter -= 1
+            continue
+        } else if (command == ']' && result[position] != 0) {
+            // берем команду перед нужной [
+            i = mapOfClosedBrackets[i]!!
+            counter -= 1
+            continue
+        }
+        i += 1
+    }
+    return result
+}
