@@ -392,9 +392,8 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             opened.add(j)
         } else if (command == ']') {
             if (opened.isNotEmpty()) {
-                val lastOpened = opened.last()
-                mapOfOpenedBrackets[lastOpened] = j
-                opened.remove(lastOpened)
+                mapOfOpenedBrackets[opened.last()] = j
+                opened.removeAt(opened.lastIndex)
             } else
                 throw IllegalArgumentException("")
         }
@@ -424,13 +423,9 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         else if (command == '[' && result[position] == 0) {
             // берем команду после нужной ]
             i = mapOfOpenedBrackets[i]!!
-            counter -= 1
-            continue
         } else if (command == ']' && result[position] != 0) {
             // берем команду перед нужной [
             i = mapOfClosedBrackets[i]!!
-            counter -= 1
-            continue
         }
         i += 1
     }
