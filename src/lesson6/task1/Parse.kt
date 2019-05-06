@@ -409,9 +409,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         counter += 1
         val command = commands.getOrNull(i) ?: break
 
-        if (position < 0 || position >= cells)
-            throw IllegalStateException("")
-
         if (command == '+')
             result[position] += 1
         else if (command == '-')
@@ -428,6 +425,9 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
             i = mapOfClosedBrackets[i]!!
         }
         i += 1
+
+        if (position < 0 || position >= cells)
+            throw IllegalStateException("")
     }
     return result
 }
