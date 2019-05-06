@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import java.lang.StringBuilder
 
 /**
  * Пример
@@ -161,7 +162,58 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    TODO()
+    File(outputName).bufferedWriter().use {
+        val lines = File(inputName).readLines()
+
+        var maxLen = 0
+        for (line in lines) {
+            val words = line.split(" ").filter { word -> word.isNotEmpty() }
+            val numOfWords = words.size
+            val wordsLen = words.map { word -> word.length }.sum()
+
+            val len = wordsLen + numOfWords - 1
+            if (len > maxLen)
+                maxLen = len
+        }
+
+        for (line in lines) {
+            val words = line.split(" ").filter { word -> word.isNotEmpty() }
+            val numOfWords = words.size
+
+            if (numOfWords == 0) {
+                it.write("\n")
+                continue
+            }
+
+            if (numOfWords == 1) {
+                it.write(words.first())
+                it.write("\n")
+                continue
+            }
+
+            val wordsLen = words.map { word -> word.length }.sum()
+
+            val numOfSpaces = (maxLen - wordsLen)
+            var howManyLonger = numOfSpaces % (numOfWords - 1)
+            val lenOfSpaces = numOfSpaces / (numOfWords - 1)
+
+            val resLine = StringBuilder()
+
+            for ((index, word) in words.withIndex()) {
+                resLine.append(word)
+                if (index == numOfWords - 1)
+                    break
+                if (howManyLonger != 0) {
+                    resLine.append(" ".repeat(lenOfSpaces + 1))
+                    howManyLonger -= 1
+                } else
+                    resLine.append(" ".repeat(lenOfSpaces))
+            }
+
+            it.write(resLine.toString())
+            it.write("\n")
+        }
+    }
 }
 
 /**
