@@ -210,7 +210,7 @@ fun bestHighJump(jumps: String): Int {
  */
 fun plusMinus(expression: String): Int {
     val canBe = "0123456789+- ".toSet()
-    if (expression.any { it !in canBe } || expression.isEmpty())
+    if (expression.any { it !in canBe } || expression.isEmpty() || expression.all { !it.isDigit() })
         throw IllegalArgumentException("")
 
     val parts = expression.split(" ")
