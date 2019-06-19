@@ -382,8 +382,6 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     if (commands.count { it == ']' } != commands.count { it == '[' } || illegal)
         throw IllegalArgumentException("")
 
-    var i = 0
-
     val opened = mutableListOf<Int>()
     val mapOfOpenedBrackets = mutableMapOf<Int, Int>()
     for ((j, command) in commands.withIndex()) {
@@ -403,29 +401,24 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
     for ((open, close) in mapOfOpenedBrackets)
         mapOfClosedBrackets[close] = open
 
-    var counter = 0
-
-    while (counter < limit) {
-        counter += 1
+    var i = 0
+    for (counter in (1..limit)) {
         val command = commands.getOrNull(i) ?: break
 
-        if (command == '+')
-            result[position] += 1
-        else if (command == '-')
-            result[position] -= 1
-        else if (command == '>')
-            position += 1
-        else if (command == '<')
-            position -= 1
-        else if (command == '[' && result[position] == 0) {
-            // берем команду после нужной ]
-            i = mapOfOpenedBrackets[i]!!
-        } else if (command == ']' && result[position] != 0) {
-            // берем команду перед нужной [
-            i = mapOfClosedBrackets[i]!!
+        when (command) {
+            '+' -> result[position] += 1
+            '-' -> result[position] -= 1
+            '>' -> position += 1
+            '<' -> position -= 1
+            else -> {
+                if (command == '[' && result[position] == 0) {
+                    i = mapOfOpenedBrackets[i]!!
+                } else if (command == ']' && result[position] != 0) {
+                    i = mapOfClosedBrackets[i]!!
+                }
+            }
         }
         i += 1
-
         if (position < 0 || position >= cells)
             throw IllegalStateException("")
     }
