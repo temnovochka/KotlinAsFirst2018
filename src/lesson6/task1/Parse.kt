@@ -332,7 +332,43 @@ fun mostExpensive(description: String): String {
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {
+    val fromRoman = mapOf(
+            'I' to 1,
+            'V' to 5,
+            'X' to 10,
+            'L' to 50,
+            'C' to 100,
+            'D' to 500,
+            'M' to 1000
+    )
+    val priority = mapOf(
+            'I' to 1,
+            'V' to 2,
+            'X' to 3,
+            'L' to 4,
+            'C' to 5,
+            'D' to 6,
+            'M' to 7
+    )
+
+    var res = 0
+    var prev = ' '
+    val valid = "IVXLCDM".toSet()
+
+    for (symb in roman) {
+        if (symb !in valid) return -1
+        val d = priority.getValue(symb) - priority.getOrDefault(prev, 7)
+        when {
+            d > 2 -> return -1
+            d > 0 -> res -= fromRoman.getOrDefault(prev, 0)
+            else -> res += fromRoman.getOrDefault(prev, 0)
+        }
+        prev = symb
+    }
+    res += fromRoman.getOrDefault(prev, 0)
+    return res
+}
 
 /**
  * Очень сложная
