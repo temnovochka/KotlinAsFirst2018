@@ -531,7 +531,39 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    File(outputName).bufferedWriter().use {
+        val res = lhv * rhv
+        val len = "$res".length + 1
+
+        val lines = mutableListOf<String>()
+        var r = rhv
+
+        lines.add(" ".repeat(len - "$lhv".length) + "$lhv")
+        lines.add("*" + " ".repeat(len - "$rhv".length - 1) + "$rhv")
+        lines.add("-".repeat(len))
+
+        var first = true
+        var counter = 0
+
+        while (r != 0) {
+            val nextNum = lhv * (r % 10)
+            when (first) {
+                false -> lines.add("+" + " ".repeat(len - "$nextNum".length - 1 - counter) + "$nextNum")
+                true -> {
+                    lines.add(" ".repeat(len - "$nextNum".length) + "$nextNum")
+                    first = false
+                }
+            }
+            counter += 1
+            r /= 10
+        }
+
+        lines.add("-".repeat(len))
+        lines.add(" $res")
+
+        for (line in lines)
+            it.write(line + "\n")
+    }
 }
 
 
