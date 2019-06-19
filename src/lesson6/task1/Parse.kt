@@ -356,6 +356,9 @@ fun fromRoman(roman: String): Int {
     var prev = ' '
     val valid = "IVXLCDM".toSet()
 
+    if (roman.isEmpty())
+        return -1
+
     for (symb in roman) {
         if (symb !in valid) return -1
         val d = priority.getValue(symb) - priority.getOrDefault(prev, 7)
