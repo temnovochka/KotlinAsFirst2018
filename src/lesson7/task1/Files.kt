@@ -588,6 +588,67 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  *
  */
 fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    TODO()
+    File(outputName).bufferedWriter().use {
+        val lines = mutableListOf<String>()
+        val res = lhv / rhv
+
+        val lhvString = "$lhv".map(Character::getNumericValue)
+        var first = true
+        var nextNum = 0
+        var len = 1
+        var numOfNull = 0
+
+        if (res == 0) {
+            nextNum = lhv
+            val under = 0
+
+            len = if ("$under".length == "$nextNum".length) 1 else 0
+            lines.add(" ".repeat(len) + "$lhv | $rhv")
+            lines.add("-$under" + " ".repeat("$lhv".length + 3 - "$under".length) + "$res")
+            lines.add("-".repeat("$under".length + 1))
+
+            val k = if ("$under".length == "$nextNum".length) -1 else 0
+            nextNum %= rhv
+            len += "-$under".length - "$nextNum".length + k
+
+            lines.add(" ".repeat(len) + "$nextNum")
+
+            for (line in lines)
+                it.write(line + "\n")
+
+            return
+        }
+
+        for (num in lhvString) {
+            nextNum = nextNum * 10 + num
+            if (first && nextNum / rhv == 0)
+                continue
+
+            val under = nextNum / rhv * rhv
+
+            if (first) {
+                len = if ("$under".length == "$nextNum".length) 1 else 0
+                lines.add(" ".repeat(len) + "$lhv | $rhv")
+                lines.add("-$under" + " ".repeat("$lhv".length + 3 - "$under".length) + "$res")
+                lines.add("-".repeat("$under".length + 1))
+                first = false
+            } else {
+                val nextLine = " ".repeat(len - numOfNull) + (if (numOfNull == 1) "0" else "") + "$nextNum"
+                val newLen = nextLine.length - "-$under".length
+                lines.add(nextLine)
+                lines.add(" ".repeat(newLen) + "-$under")
+                lines.add(" ".repeat(newLen) + "-".repeat("$under".length + 1))
+            }
+
+            val k = if ("$under".length == "$nextNum".length) -1 else 0
+            nextNum %= rhv
+            numOfNull = if (nextNum == 0) 1 else 0
+            len += "-$under".length - "$nextNum".length + k + numOfNull
+        }
+        lines.add(" ".repeat(len - numOfNull) + "$nextNum")
+
+        for (line in lines)
+            it.write(line + "\n")
+    }
 }
 
