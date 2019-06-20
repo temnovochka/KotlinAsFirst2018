@@ -643,7 +643,8 @@ fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
             val k = if ("$under".length == "$nextNum".length) -1 else 0
             nextNum %= rhv
             numOfNull = if (nextNum == 0) 1 else 0
-            len += "-$under".length - "$nextNum".length + k + numOfNull
+            val next = "-$under".length - "$nextNum".length + k + numOfNull
+            len += if (next < 0) 0 else next
         }
         lines.add(" ".repeat(len - numOfNull) + "$nextNum")
 
