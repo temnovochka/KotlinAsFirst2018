@@ -342,26 +342,18 @@ fun fromRoman(roman: String): Int {
             'D' to 500,
             'M' to 1000
     )
-    val priority = mapOf(
-            'I' to 1,
-            'V' to 2,
-            'X' to 3,
-            'L' to 4,
-            'C' to 5,
-            'D' to 6,
-            'M' to 7
-    )
+    val priority = fromRoman.keys.mapIndexed { index, key -> key to index }.toMap()
+    val valid = fromRoman.keys.toSet()
 
     var res = 0
     var prev = ' '
-    val valid = "IVXLCDM".toSet()
 
     if (roman.isEmpty())
         return -1
 
     for (symb in roman) {
         if (symb !in valid) return -1
-        val d = priority.getValue(symb) - priority.getOrDefault(prev, 7)
+        val d = priority.getValue(symb) - priority.getOrDefault(prev, priority.size)
         when {
             d > 2 -> return -1
             d > 0 -> res -= fromRoman.getOrDefault(prev, 0)
