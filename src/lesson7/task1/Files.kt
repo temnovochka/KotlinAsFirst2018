@@ -531,38 +531,29 @@ fun markdownToHtml(inputName: String, outputName: String) {
  *
  */
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
-    File(outputName).bufferedWriter().use {
+    File(outputName).printWriter().use {
         val res = lhv * rhv
         val len = "$res".length + 1
 
-        val lines = mutableListOf<String>()
         var r = rhv
+        var nextNum = lhv * (r % 10)
 
-        lines.add(" ".repeat(len - "$lhv".length) + "$lhv")
-        lines.add("*" + " ".repeat(len - "$rhv".length - 1) + "$rhv")
-        lines.add("-".repeat(len))
+        it.println(" ".repeat(len - "$lhv".length) + "$lhv")
+        it.println("*" + " ".repeat(len - "$rhv".length - 1) + "$rhv")
+        it.println("-".repeat(len))
+        it.println(" ".repeat(len - "$nextNum".length) + "$nextNum")
 
-        var first = true
-        var counter = 0
+        var counter = 1
 
-        while (r != 0) {
-            val nextNum = lhv * (r % 10)
-            when (first) {
-                false -> lines.add("+" + " ".repeat(len - "$nextNum".length - 1 - counter) + "$nextNum")
-                true -> {
-                    lines.add(" ".repeat(len - "$nextNum".length) + "$nextNum")
-                    first = false
-                }
-            }
-            counter += 1
+        while (r / 10 != 0) {
             r /= 10
+            nextNum = lhv * (r % 10)
+            it.println("+" + " ".repeat(len - "$nextNum".length - 1 - counter) + "$nextNum")
+            counter += 1
         }
 
-        lines.add("-".repeat(len))
-        lines.add(" $res")
-
-        for (line in lines)
-            it.write(line + "\n")
+        it.println("-".repeat(len))
+        it.println(" $res")
     }
 }
 
