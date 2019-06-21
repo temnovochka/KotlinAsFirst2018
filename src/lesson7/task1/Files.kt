@@ -3,6 +3,7 @@
 package lesson7.task1
 
 import java.io.File
+import java.lang.Integer.max
 import java.lang.StringBuilder
 
 /**
@@ -578,69 +579,57 @@ fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
  * Используемые пробелы, отступы и дефисы должны в точности соответствовать примеру.
  *
  */
-fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
-    File(outputName).bufferedWriter().use {
-        val lines = mutableListOf<String>()
-        val res = lhv / rhv
+val Int.length
+    get () = "$this".length
 
-        val lhvString = "$lhv".map(Character::getNumericValue)
-        var first = true
-        var nextNum = 0
-        var len = 1
-        var numOfNull = 0
+fun printDivisionProcess(lhv: Int, rhv: Int, outputName: String) {
+    File(outputName).printWriter().use {
+        val res = lhv / rhv
+        var len: Int
 
         if (res == 0) {
-            nextNum = lhv
-            val under = 0
-
-            len = if ("$under".length == "$nextNum".length) 1 else 0
-            lines.add(" ".repeat(len) + "$lhv | $rhv")
-            lines.add("-$under" + " ".repeat("$lhv".length + 3 - "$under".length) + "$res")
-            lines.add("-".repeat("$under".length + 1))
-
-            val k = if ("$under".length == "$nextNum".length) -1 else 0
-            nextNum %= rhv
-            len += "-$under".length - "$nextNum".length + k
-
-            lines.add(" ".repeat(len) + "$nextNum")
-
-            for (line in lines)
-                it.write(line + "\n")
-
+            len = if (lhv.length == 1) 1 else 0
+            it.println(" ".repeat(len) + "$lhv | $rhv")
+            it.println(" ".repeat(if (lhv.length - 2 >= 0) (lhv.length - 2) else 0) + "-0" + " ".repeat(3) + "$res")
+            it.println("-".repeat(max(2, lhv.length)))
+            it.println(" ".repeat(len) + "$lhv")
             return
         }
 
+        val lhvString = "$lhv".map(Character::getNumericValue).iterator()
+        var upper = lhvString.next()
+
+        while (upper / rhv == 0)
+            upper = upper * 10 + lhvString.next()
+        var under = upper / rhv * rhv
+
+        len = if (under.length == upper.length) 1 else 0
+
+        it.println(" ".repeat(len) + "$lhv | $rhv")
+        it.println("-$under" + " ".repeat(lhv.length + 3 - under.length) + "$res")
+        it.println("-".repeat(max(under.length + 1, upper.length)))
+
+        len += upper.length - (upper - under).length
+        upper -= under
+        var numOfNull = if (upper == 0) 1 else 0
+
         for (num in lhvString) {
-            nextNum = nextNum * 10 + num
-            if (first && nextNum / rhv == 0)
-                continue
+            upper = upper * 10 + num
+            under = upper / rhv * rhv
 
-            val under = nextNum / rhv * rhv
+            val nextLine = " ".repeat(len) + (if (numOfNull == 1) "0" else "") + "$upper"
+            it.println(nextLine)
+            it.println(" ".repeat(nextLine.length - "-$under".length) + "-$under")
+            it.println(" ".repeat(
+                    nextLine.length - (if (upper.length > under.length + 1) upper.length else (under.length + 1))
+            ) + "-".repeat(max(under.length + 1, upper.length)))
 
-            if (first) {
-                len = if ("$under".length == "$nextNum".length) 1 else 0
-                lines.add(" ".repeat(len) + "$lhv | $rhv")
-                lines.add("-$under" + " ".repeat("$lhv".length + 3 - "$under".length) + "$res")
-                lines.add("-".repeat("$under".length + 1))
-                first = false
-            } else {
-                val nextLine = " ".repeat(len - numOfNull) + (if (numOfNull == 1) "0" else "") + "$nextNum"
-                val newLen = nextLine.length - "-$under".length
-                lines.add(nextLine)
-                lines.add(" ".repeat(newLen) + "-$under")
-                lines.add(" ".repeat(newLen) + "-".repeat("$under".length + 1))
-            }
-
-            val k = if ("$under".length == "$nextNum".length) -1 else 0
-            nextNum %= rhv
-            numOfNull = if (nextNum == 0) 1 else 0
-            val next = "-$under".length - "$nextNum".length + k + numOfNull
-            len += if (next < 0) 0 else next
+            len += upper.length - (upper - under).length + numOfNull
+            upper -= under
+            numOfNull = if (upper == 0) 1 else 0
         }
-        lines.add(" ".repeat(len - numOfNull) + "$nextNum")
 
-        for (line in lines)
-            it.write(line + "\n")
+        it.println(" ".repeat(len) + "$upper")
     }
 }
 
