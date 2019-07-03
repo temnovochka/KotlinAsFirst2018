@@ -173,7 +173,19 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> = TODO()
  * Пример: kingMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Король может последовательно пройти через клетки (4, 2) и (5, 2) к клетке (6, 3).
  */
-fun kingMoveNumber(start: Square, end: Square): Int = TODO()
+fun kingMoveNumber(start: Square, end: Square): Int {
+    if (!start.inside() || !end.inside())
+        throw IllegalArgumentException()
+
+    val (c, r) = Pair(abs(start.column - end.column), abs(start.row - end.row))
+
+    return when {
+        start == end -> 0
+        (start.column == end.column) || (start.row == end.row) -> c + r
+        c == r -> c
+        else -> c + abs(start.row + (if (start.column > end.column) -1 else 1) * c - end.row)
+    }
+}
 
 /**
  * Сложная
