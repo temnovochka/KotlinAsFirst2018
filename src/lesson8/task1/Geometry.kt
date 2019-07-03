@@ -4,10 +4,7 @@ package lesson8.task1
 
 import lesson1.task1.sqr
 import java.lang.IllegalArgumentException
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /**
  * Точка на плоскости
@@ -190,14 +187,24 @@ class Line private constructor(val b: Double, val angle: Double) {
  *
  * Построить прямую по отрезку
  */
-fun lineBySegment(s: Segment): Line = TODO()
+fun lineBySegment(s: Segment): Line {
+    val y = s.end.y - s.begin.y
+    val x = s.end.x - s.begin.x
+    val angle = when {
+        x == 0.0 -> PI / 2
+        y == 0.0 -> 0.0
+        (x < 0.0 && y > 0.0) || (x > 0.0 && y < 0.0) -> atan(y / x) + PI
+        else -> atan(y / x)
+    }
+    return Line(s.begin, angle)
+}
 
 /**
  * Средняя
  *
  * Построить прямую по двум точкам
  */
-fun lineByPoints(a: Point, b: Point): Line = TODO()
+fun lineByPoints(a: Point, b: Point) = lineBySegment(Segment(a, b))
 
 /**
  * Сложная
