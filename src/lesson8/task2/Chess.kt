@@ -2,6 +2,7 @@
 package lesson8.task2
 
 import kotlin.math.abs
+import kotlin.math.min
 
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
@@ -183,7 +184,7 @@ fun kingMoveNumber(start: Square, end: Square): Int {
         start == end -> 0
         (start.column == end.column) || (start.row == end.row) -> c + r
         c == r -> c
-        else -> c + abs(start.row + (if (start.column > end.column) -1 else 1) * c - end.row)
+        else -> min(c + abs(r - c), r + abs(c - r))
     }
 }
 
