@@ -1,6 +1,8 @@
 @file:Suppress("UNUSED_PARAMETER")
 package lesson8.task2
 
+import kotlin.math.abs
+
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
@@ -32,11 +34,15 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
-    val (column, row) = notation.toList()
-
-    if (notation.length != 2 || column !in ('a'..'h').toSet() && row !in ('1'..'8').toSet())
+    if (notation.length != 2)
         throw IllegalArgumentException()
-    return Square(column.toInt() - 'a'.toInt() + 1, row.toInt() - '0'.toInt())
+
+    val (column, row) = notation.toList()
+    val s = Square(column.toInt() - 'a'.toInt() + 1, row.toInt() - '0'.toInt())
+    return when (s.inside()) {
+        true -> s
+        else -> throw IllegalArgumentException()
+    }
 }
 
 /**
@@ -120,7 +126,7 @@ fun bishopMoveNumber(start: Square, end: Square): Int {
         throw IllegalArgumentException()
     return when {
         start == end -> 0
-        start.column - end.column == start.row - end.row -> 1
+        abs(start.column - end.column) == abs(start.row - end.row) -> 1
         (start.column - end.column) % 2 == 0 && (start.row - end.row) % 2 == 0 -> 2
         else -> -1
     }
