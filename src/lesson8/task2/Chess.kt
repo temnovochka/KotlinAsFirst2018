@@ -127,7 +127,8 @@ fun bishopMoveNumber(start: Square, end: Square): Int {
     return when {
         start == end -> 0
         abs(start.column - end.column) == abs(start.row - end.row) -> 1
-        (start.column - end.column) % 2 == 0 && (start.row - end.row) % 2 == 0 -> 2
+        (abs(start.column - end.column) % 2 == 0 && abs(start.row - end.row) % 2 == 0) ||
+                (abs(start.column - end.column) % 2 == 1 && abs(start.row - end.row) % 2 == 1) -> 2
         else -> -1
     }
 }
