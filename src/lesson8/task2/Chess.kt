@@ -40,10 +40,8 @@ fun square(notation: String): Square {
 
     val (column, row) = notation.toList()
     val s = Square(column.toInt() - 'a'.toInt() + 1, row.toInt() - '0'.toInt())
-    return when (s.inside()) {
-        true -> s
-        else -> throw IllegalArgumentException()
-    }
+    require(s.inside())
+    return s
 }
 
 /**
@@ -128,8 +126,7 @@ fun bishopMoveNumber(start: Square, end: Square): Int {
     return when {
         start == end -> 0
         abs(start.column - end.column) == abs(start.row - end.row) -> 1
-        (abs(start.column - end.column) % 2 == 0 && abs(start.row - end.row) % 2 == 0) ||
-                (abs(start.column - end.column) % 2 == 1 && abs(start.row - end.row) % 2 == 1) -> 2
+        abs(start.column - end.column) % 2 == abs(start.row - end.row) % 2 -> 2
         else -> -1
     }
 }

@@ -165,7 +165,7 @@ fun centerFile(inputName: String, outputName: String) {
 fun alignFileByWidth(inputName: String, outputName: String) {
     File(outputName).bufferedWriter().use {
         val lines = File(inputName).readLines()
-        val mWords = emptyList<List<String>>().toMutableList()
+        val mWords = mutableListOf<List<String>>()
 
         var maxLen = 0
         for (line in lines) {
